@@ -66,7 +66,7 @@ PORT=8080 HTTPS_PORT=8443 ./maint-server
 
 ## systemd サービス 例
 
-```toml
+```ini
 # /usr/lib/systemd/system/maint-server.service
 [Unit]
 Description=メンテナンスサーバー

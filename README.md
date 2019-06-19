@@ -73,7 +73,7 @@ PORT=8080 HTTPS_PORT=8443 ./maint-server
 
 ## Systemd service unit example
 
-```toml
+```ini
 # /usr/lib/systemd/system/maint-server.service
 [Unit]
 Description=Maintenance Server

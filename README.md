@@ -1,38 +1,41 @@
-# 汎用メンテナンスサーバー
+# Generic maintenance server
 
-HTTP 503 ステータス (Service Unavailable) を返すだけのサーバーです。  
-サーバーのメンテナンスでダウンタイムが発生するときに利用する想定です。  
+It is a server that only returns HTTP 503 status (Service Unavailable).  
+It is assumed to be used when downtime occurs in server maintenance.  
 
-## 機能
+## Features
 
-- すべてのリクエスト (`/assets/`を除く) に対して `HTTP 503` のレスポンスを返します。
-- `Accept` ヘッダを見て、 `/json` が含まれていたら `503.json` のレスポンスを返します。
-- リクエストのパスが `.json` で終わる場合も `503.json` のレスポンスを返します。
-- それ以外は `503.html` の内容を返します。
-- HTTPS 対応しています。複数ドメインに対応しています。
+- Responses `HTTP 503` for all request (without `/assets/*`).
+- Responses `503.json` when contains `/json` in `Accept` header.
+- Responses `503.json` when ends with `.json` for request path.
+- Otherwise it responses the contents of `503.html`.
+- Supported `HTTPS`, supported multi domain.
 
-## 使い方
+## Usage
 
-### コンテンツ編集
+### Edit your contents
 
-`503.html` と `503.json` をユースケースに合わせて編集してください。
+Edit `503.html` and` 503.json` according to your use case.
 
-#### assets の配置
+#### Deploy assets 
 
-必要に応じて `503.html` で利用するファイルを `assets` ディレクトリに格納してください。
+If necessary, save the files used by `503.html` in the `assets` directory.
 
-### サーバーの起動
+### Start server
 
-Listen ポートは環境変数の `PORT` で指定できます。  
-指定しなかった場合は `80` で Listen しますが、 Linux などでは root 以外 80 番ポートが利用できないのでご注意ください。
+Listen port can be specified by the environment variable `PORT`.  
+If not specified, it will listen on `80` port.  
+
+> Notice, on Linux etc, only root user can use 80 port.
 
 ```sh
 PORT=8080 ./maint-server
 ```
 
-### HTTPS リスナー
+### Listen HTTPS
 
-HTTPS を利用する場合は、以下のようなディレクトリ構成にして実行してください。 
+Use the following directory structure, if you want to use HTTPS.
+ 
 
 ```
 .
@@ -50,26 +53,30 @@ HTTPS を利用する場合は、以下のようなディレクトリ構成に�
     └── ...
 ```
 
-- 複数のドメインに対応しています。  
-- 証明書は、必ず中間証明書などを結合した Chain 証明書にしてください。
-- 拡張子でファイルを判別します。証明書を `.crt`, 秘密鍵を `.key` として格納してください。
-  - 両方が揃っていない場合、そのドメインの証明書は読み込まれません。
-- `ssl` ディレクトリに証明書がない場合は HTTPS のリスナーは起動しません。
+- Supported multi domain.
+- Certificate file must be a chained certificate combining intermediate certificates.
+- Determine the file by extension.
+    Save the certificate file extension `.crt` and the private key file extension` .key`.
+  - Certificate for that domain will not be read if not have both.
+- HTTPS listener will not start if there is no `ssl` directory or certificate file.
 
-#### HTTPS ポートの指定
+#### Specify listen port
 
-HTTPS のポートは `HTTPS_PORT` で指定してください。指定しなかった場合は 443 ポートが利用されますが、Linux (ry
+Listen port can be specified by the environment variable `HTTPS_PORT`.
+If not specified, it will listen on `443` port.
+
+> Notice, on Linux etc, only root user can use 443 port.
 
 ```sh
 PORT=8080 HTTPS_PORT=8443 ./maint-server
 ```
 
-## systemd サービス 例
+## Systemd service unit example
 
 ```toml
 # /usr/lib/systemd/system/maint-server.service
 [Unit]
-Description=メンテナンスサーバー
+Description=Maintenance Server
 After=network-online.target
 
 [Service]

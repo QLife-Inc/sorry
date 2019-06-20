@@ -1,7 +1,7 @@
 package main
 
 import "os"
-import "github.com/QLife-Inc/maint-server/lib"
+import "github.com/QLife-Inc/sorry/lib"
 
 var (
 	Version  string

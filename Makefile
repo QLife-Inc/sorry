@@ -1,4 +1,4 @@
-NAME     := maint-server
+NAME     := sorry
 VERSION  := 1.0
 REVISION := $(shell git rev-parse --short HEAD)
 

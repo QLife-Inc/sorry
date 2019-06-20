@@ -8,9 +8,9 @@ It is assumed to be used when downtime occurs in server maintenance.
 - Responses with `HTTP 503` for all requests (excluding `/assets/*`).
 - Responses with `503.json` when the `Accept` header contains `/json`.
 - Responses with `503.json` when the request path ends with `.json`.
-- Otherwise it responses the contents of `503.html`.
-- Supported `HTTPS`, supported multi domain.
-- Can specify Retry-After header by environment variable.
+- Returns the contents of `503.html` for all other requests.
+- Supports `HTTPS` and multiple domains.
+- Allows specification of the `Retry-After` header through an environment variable.
 
 ## Usage
 
@@ -56,9 +56,9 @@ Use the following directory structure, if you want to use HTTPS.
 
 - Supported multi domain.
 - Certificate file must be a chained certificate combining intermediate certificates.
-- Determine the file by extension.
-    Save the certificate file extension `.crt` and the private key file extension` .key`.
-  - Certificate for that domain will not be read if not have both.
+- Files are determined by extension.
+    Save the certificate file with extension `.crt` and the private key file with extension` .key`.
+  - The certificate for that domain will not be read if it dose not have both.
 - The HTTPS listener will not start if there is no `ssl` directory or certificate file.
 
 #### Specify listen port

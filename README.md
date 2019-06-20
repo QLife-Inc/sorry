@@ -1,13 +1,13 @@
-# Generic sorry server
+# Plain Sorry Server
 
-It is a server that only returns HTTP 503 status (Service Unavailable).  
+This is a server that only returns HTTP 503 status codes (Service Unavailable).  
 It is assumed to be used when downtime occurs in server maintenance.  
 
 ## Features
 
-- Responses `HTTP 503` for all request (without `/assets/*`).
-- Responses `503.json` when contains `/json` in `Accept` header.
-- Responses `503.json` when ends with `.json` for request path.
+- Responses with `HTTP 503` for all requests (excluding `/assets/*`).
+- Responses with `503.json` when the `Accept` header contains `/json`.
+- Responses with `503.json` when the request path ends with `.json`.
 - Otherwise it responses the contents of `503.html`.
 - Supported `HTTPS`, supported multi domain.
 - Can specify Retry-After header by environment variable.
@@ -24,10 +24,10 @@ If necessary, save the files used by `503.html` in the `assets` directory.
 
 ### Start server
 
-Listen port can be specified by the environment variable `PORT`.  
-If not specified, it will listen on `80` port.  
+The listen port can be specified by the environment variable `PORT`.  
+If not specified, it will listen on port `80`.  
 
-> Notice, on Linux etc, only root user can use 80 port.
+> Note that on Linux, only the root user can use port 80.
 
 ```sh
 PORT=8080 ./maint-server
@@ -59,14 +59,14 @@ Use the following directory structure, if you want to use HTTPS.
 - Determine the file by extension.
     Save the certificate file extension `.crt` and the private key file extension` .key`.
   - Certificate for that domain will not be read if not have both.
-- HTTPS listener will not start if there is no `ssl` directory or certificate file.
+- The HTTPS listener will not start if there is no `ssl` directory or certificate file.
 
 #### Specify listen port
 
-Listen port can be specified by the environment variable `HTTPS_PORT`.
-If not specified, it will listen on `443` port.
+The listen port can be specified by the environment variable `HTTPS_PORT`.
+If not specified, it will listen on port `443`.
 
-> Notice, on Linux etc, only root user can use 443 port.
+> Note that on Linux, only the root user can use port 443.
 
 ```sh
 PORT=8080 HTTPS_PORT=8443 ./maint-server
@@ -74,7 +74,7 @@ PORT=8080 HTTPS_PORT=8443 ./maint-server
 
 ### Specify Retry-After
 
-Can include a `Retry-After` header in your response by specifying the date and time in the `RETRY_AFTER` environment variable in the form `yyyy-MM-dd hh:mm:ss+0000`.
+You can include a `Retry-After` header in your response by specifying the date and time in the `RETRY_AFTER` environment variable in the form `yyyy-MM-dd hh:mm:ss+0000`.
 
 ```sh
 RETRY_AFTER="2019-06-20 23:59:59+0900" ./maint-server

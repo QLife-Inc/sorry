@@ -1,5 +1,5 @@
 NAME     := sorry
-VERSION  := 1.0
+VERSION  := 1.1
 REVISION := $(shell git rev-parse --short HEAD)
 
 SRCS    := $(shell find . -type f -name '*.go')

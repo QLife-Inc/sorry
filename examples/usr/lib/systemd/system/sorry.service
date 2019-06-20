@@ -1,0 +1,14 @@
+[Unit]
+Description=Sorry Server
+Documentation=https://github.com/QLife-Inc/sorry
+After=network-online.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/sorry
+ExecStart=/path/to/sorry/sorry
+ExecStop=/bin/kill -INT ${MAINPID}
+Restart=always
+WorkingDirectory=/path/to/sorry
+
+[Install]
+WantedBy=multi-user.target

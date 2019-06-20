@@ -4,15 +4,31 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
+
+const retryAfterInputFormat =  "2006-01-02 15:04:05-0700"
+const retryAfterFormat = time.RFC1123
 
 func readFile(filename string) []byte {
 	if data, err := ioutil.ReadFile(filename); err != nil {
 		panic(err)
 	} else {
 		return data
+	}
+}
+
+func getRetryAfter() *time.Time {
+	var retryAfter = os.Getenv("RETRY_AFTER")
+	if retryAfter == "" {
+		return nil
+	}
+	if t, err := time.Parse(retryAfterInputFormat, retryAfter); err != nil {
+		panic(err)
+	} else {
+		return &t
 	}
 }
 
@@ -53,6 +69,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Add("Content-Type", contentType)
+
+	// Retry-After が指定されていたらヘッダ追加
+	if retryAfter := getRetryAfter(); retryAfter != nil {
+		w.Header().Add("Retry-After", retryAfter.Format(retryAfterFormat))
+	}
 
 	// ステータスコードは 503 固定
 	w.WriteHeader(http.StatusServiceUnavailable)

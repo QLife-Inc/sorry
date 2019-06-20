@@ -1,4 +1,4 @@
-# Plain Sorry Server
+# General Purpose Sorry Server
 
 This is a server that only returns HTTP 503 status codes (Service Unavailable).  
 It is assumed to be used when downtime occurs in server maintenance.  
@@ -14,7 +14,7 @@ It is assumed to be used when downtime occurs in server maintenance.
 
 ## Usage
 
-### Edit your contents
+### Customize response contents
 
 Edit `503.html` and` 503.json` according to your use case.
 
@@ -35,7 +35,7 @@ PORT=8080 ./maint-server
 
 ### Listen HTTPS
 
-Use the following directory structure, if you want to use HTTPS.
+Use the following directory structure if you want to use HTTPS.
  
 
 ```
@@ -54,8 +54,8 @@ Use the following directory structure, if you want to use HTTPS.
     └── ...
 ```
 
-- Supported multi domain.
-- Certificate file must be a chained certificate combining intermediate certificates.
+- Supports multiple domains.
+- The certificate file must be a chained certificate combining intermediate certificates.
 - Files are determined by extension.
     Save the certificate file with extension `.crt` and the private key file with extension` .key`.
   - The certificate for that domain will not be read if it dose not have both.

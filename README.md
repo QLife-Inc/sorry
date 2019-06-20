@@ -1,4 +1,4 @@
-# Generic maintenance server
+# Generic sorry server
 
 It is a server that only returns HTTP 503 status (Service Unavailable).  
 It is assumed to be used when downtime occurs in server maintenance.  
@@ -10,6 +10,7 @@ It is assumed to be used when downtime occurs in server maintenance.
 - Responses `503.json` when ends with `.json` for request path.
 - Otherwise it responses the contents of `503.html`.
 - Supported `HTTPS`, supported multi domain.
+- Can specify Retry-After header by environment variable.
 
 ## Usage
 
@@ -71,22 +72,41 @@ If not specified, it will listen on `443` port.
 PORT=8080 HTTPS_PORT=8443 ./maint-server
 ```
 
-## Systemd service unit example
+### Specify Retry-After
 
-```ini
-# /usr/lib/systemd/system/maint-server.service
-[Unit]
-Description=Maintenance Server
-After=network-online.target
+Can include a `Retry-After` header in your response by specifying the date and time in the `RETRY_AFTER` environment variable in the form `yyyy-MM-dd hh:mm:ss+0000`.
 
-[Service]
-ExecStart=/path/to/maint-server/maint-server
-ExecStop=/bin/kill -INT ${MAINPID}
-Restart=always
-WorkingDirectory=/path/to/maint-server
+```sh
+RETRY_AFTER="2019-06-20 23:59:59+0900" ./maint-server
+```
 
-[Install]
-WantedBy=multi-user.target
+## Use systemd service unit
+
+Edit the following files in the `examples` directory and deploy them on the server.
+
+- [/etc/sysconfig/sorry](examples/etc/sysconfig/sorry)
+- [/usr/lib/systemd/system/sorry.service](examples/usr/lib/systemd/system/sorry.service)
+
+After deployment, start the service with the following command.
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable sorry
+sudo systemctl start sorry
+```
+
+## Use Upstart init config
+
+Edit the following files in the `examples` directory and deploy them on the server.
+
+- [/etc/sysconfig/sorry](examples/etc/sysconfig/sorry)
+- [/etc/init/sorry.conf](examples/etc/init/sorry.conf)
+
+After deployment, start the service with the following command.
+
+```sh
+sudo initctl reload-configuration
+sudo initctl start sorry
 ```
 
 ## Build

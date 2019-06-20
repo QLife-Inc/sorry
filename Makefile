@@ -7,6 +7,7 @@ LDFLAGS := -ldflags="-s -w -X \"main.Version=$(VERSION)\" -X \"main.Revision=$(R
 
 .PHONY: mac
 mac:
+	rm -rf build/darwin-amd64
 	make build OS=darwin ARCH=amd64
 
 .PHONY: build
@@ -21,17 +22,21 @@ clean:
 	rm -rf build/*
 
 .PHONY: cross
-cross: linux win64 linux386 win386 mac
+cross: clean linux win64 linux386 win386 mac
 
 .PHONY: linux
 linux:
+	rm -rf build/linux-amd64
 	make build OS=linux ARCH=amd64
 .PHONY: win64
 win64:
+	rm -rf build/windows-amd64
 	make build OS=windows ARCH=amd64
 .PHONY: linux386
 linux386:
+	rm -rf build/linux-386
 	make build OS=linux ARCH=386
 .PHONY: win386
 win386:
+	rm -rf build/windows-386
 	make build OS=windows ARCH=386

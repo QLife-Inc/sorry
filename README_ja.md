@@ -83,7 +83,6 @@ RETRY_AFTER="2019-06-20 23:59:59+0900" ./maint-server
 
 ```sh
 sudo systemctl daemon-reload
-sudo systemctl enable sorry
 sudo systemctl start sorry
 ```
 

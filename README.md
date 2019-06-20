@@ -91,7 +91,6 @@ After deployment, start the service with the following command.
 
 ```sh
 sudo systemctl daemon-reload
-sudo systemctl enable sorry
 sudo systemctl start sorry
 ```
 

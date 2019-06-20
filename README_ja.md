@@ -76,8 +76,8 @@ RETRY_AFTER="2019-06-20 23:59:59+0900" ./maint-server
 
 `examples` ディレクトリにある以下のファイルを編集してサーバー上にデプロイしてください。
 
-- [/etc/sysconfig/sorry](examples/etc/sysconfig/sorry)
-- [/usr/lib/systemd/system/sorry.service](examples/usr/lib/systemd/system/sorry.service)
+- [/etc/sysconfig/sorry](examples/systemd/etc/sysconfig/sorry)
+- [/usr/lib/systemd/system/sorry.service](examples/systemd/usr/lib/systemd/system/sorry.service)
 
 デプロイ後、以下のコマンドでサービスを起動してください。
 
@@ -91,8 +91,8 @@ sudo systemctl start sorry
 
 `examples` ディレクトリにある以下のファイルを編集してサーバー上にデプロイしてください。
 
-- [/etc/sysconfig/sorry](examples/etc/sysconfig/sorry)
-- [/etc/init/sorry.conf](examples/etc/init/sorry.conf)
+- [/etc/sysconfig/sorry](examples/upstart/etc/sysconfig/sorry)
+- [/etc/init/sorry.conf](examples/upstart/etc/init/sorry.conf)
 
 デプロイ後、以下のコマンドでサービスを起動してください。
 

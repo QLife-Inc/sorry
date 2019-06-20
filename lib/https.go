@@ -5,21 +5,24 @@ import (
 	"net"
 )
 
-func createTlsConfig(certPairs []CertificatePair) *tls.Config {
+func createTlsConfig(certPairs []CertificatePair) (*tls.Config, error) {
 	config := &tls.Config{}
 	config.Certificates = make([]tls.Certificate, len(certPairs))
-	for i, cert := range certPairs {
-		config.Certificates[i] = cert.ToCertificate()
+	for i, pair := range certPairs {
+		if cert, err := pair.ToCertificate(); err != nil {
+			return nil, err
+		} else {
+			config.Certificates[i] = *cert
+		}
 	}
 	config.BuildNameToCertificate()
-	return config
+	return config, nil
 }
 
-func CreateHttpsListener(port string, certPairs []CertificatePair) net.Listener {
-	config := createTlsConfig(certPairs)
-	if listener, err := tls.Listen("tcp", ":" + port, config); err != nil {
-		panic(err)
+func CreateHttpsListener(port string, certPairs []CertificatePair) (net.Listener, error) {
+	if config, err := createTlsConfig(certPairs); err != nil {
+		return nil, err
 	} else {
-		return listener
+		return tls.Listen("tcp", ":" + port, config)
 	}
 }

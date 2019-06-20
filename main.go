@@ -1,55 +1,78 @@
 package main
 
-import "os"
-import "github.com/QLife-Inc/sorry/lib"
+import (
+	"log"
+	"os"
+
+	"github.com/QLife-Inc/sorry/lib"
+)
 
 var (
 	Version  string
 	Revision string
 )
 
-func getHttpPort() string {
-	var listenPort = os.Getenv("PORT")
-	if listenPort == "" {
-		return "80"
+func getEnvOrDefault(key string, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
 	}
-	return listenPort
+	return defaultValue
+}
+
+func getHttpPort() string {
+	return getEnvOrDefault("PORT", "80")
 }
 
 func getHttpsPort() string {
-	var listenPort = os.Getenv("HTTPS_PORT")
-	if listenPort == "" {
-		return "443"
-	}
-	return listenPort
+	return getEnvOrDefault("HTTPS_PORT", "443")
 }
 
-func startHttpsListener() {
-	var certs = lib.GetCertificatePairs()
+func createHttpsListener(contents *lib.ResponseContents) (func(), error) {
+	certs, err := lib.GetCertificatePairs()
+	if err != nil {
+		return nil, err
+	}
 	if len(certs) == 0 {
-		return
+		return nil, nil
 	}
-	var listener = lib.CreateHttpsListener(getHttpsPort(), certs)
-	var server = lib.CreateServer()
-	server.Serve(listener)
+	var port = getHttpsPort()
+	listener, err := lib.CreateHttpsListener(port, certs)
+	if err != nil {
+		return nil, err
+	}
+	return func() {
+		log.Printf("Start HTTPS Listener on port %s\n", port)
+		lib.CreateServer(contents, "https").Serve(listener)
+	}, nil
 }
 
-func startHttpListener() {
-	var server = lib.CreateServer()
-	server.Addr = ":" + getHttpPort()
-	server.ListenAndServe()
+func createHttpListener(contents *lib.ResponseContents) func() {
+	var server = lib.CreateServer(contents, "http")
+	var port = getHttpPort()
+	server.Addr = ":" + port
+	return func() {
+		log.Printf("Start HTTP Listener on port %s\n", port)
+		server.ListenAndServe()
+	}
+}
+
+func createListeners(contents *lib.ResponseContents) (func(), func(), error) {
+	httpListener := createHttpListener(contents)
+	httpsListener, err := createHttpsListener(contents)
+	return httpListener, httpsListener, err
 }
 
 func main() {
+	contents, err := lib.NewResponseContents()
+	http, https, err := createListeners(contents)
+
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
+
 	finish := make(chan bool)
-
-	go func() {
-		startHttpListener()
-	}()
-
-	go func() {
-		startHttpsListener()
-	}()
-
+	go http()
+	go https()
 	<-finish
 }

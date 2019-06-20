@@ -1,31 +1,33 @@
-# 汎用 Sorry サーバー
+# General Purpose Sorry Server
 
-HTTP 503 ステータス (Service Unavailable) を返すだけのサーバーです。  
-サーバーのメンテナンスでダウンタイムが発生するときに利用する想定です。  
+This is a server that only returns HTTP 503 status codes (Service Unavailable).  
+It is assumed to be used when downtime occurs in server maintenance.  
 
 ## Features
 
-- すべてのリクエスト (`/assets/`を除く) に対して `HTTP 503` のレスポンスを返します。
-- `Accept` ヘッダを見て、 `/json` が含まれていたら `503.json` のレスポンスを返します。
-- リクエストのパスが `.json` で終わる場合も `503.json` のレスポンスを返します。
-- それ以外は `503.html` の内容を返します。
-- HTTPS 対応しています。複数ドメインに対応しています。
-- 環境変数で Retry-After ヘッダを指定可能です。
+- Responses with `HTTP 503` for all requests (excluding `/assets/*`).
+- Responses with `503.json` when the `Accept` header contains `/json`.
+- Responses with `503.json` when the request path ends with `.json`.
+- Returns the contents of `503.html` for all other requests.
+- Supports `HTTPS` and multiple domains.
+- Allows specification of the `Retry-After` header through an environment variable.
 
 ## Usage
 
-### Edit your contents
+### Customize response contents
 
-`503.html` と `503.json` をユースケースに合わせて編集してください。
+Edit `503.html` and` 503.json` according to your use case.
 
 #### Deploy assets 
 
-必要に応じて `503.html` で利用するファイルを `assets` ディレクトリに格納してください。
+If necessary, save the files used by `503.html` in the `assets` directory.
 
 ### Start server
 
-Listen ポートは環境変数の `PORT` で指定できます。  
-指定しなかった場合は `80` で Listen しますが、 Linux などでは root 以外 80 番ポートが利用できないのでご注意ください。
+The listen port can be specified by the environment variable `PORT`.  
+If not specified, it will listen on port `80`.  
+
+> Note that on Linux, only the root user can use port 80.
 
 ```sh
 PORT=8080 ./maint-server
@@ -33,7 +35,8 @@ PORT=8080 ./maint-server
 
 ### Listen HTTPS
 
-HTTPS を利用する場合は、以下のようなディレクトリ構成にして実行してください。 
+Use the following directory structure if you want to use HTTPS.
+ 
 
 ```
 .
@@ -51,15 +54,19 @@ HTTPS を利用する場合は、以下のようなディレクトリ構成に�
     └── ...
 ```
 
-- 複数のドメインに対応しています。  
-- 証明書は、必ず中間証明書などを結合した Chain 証明書にしてください。
-- 拡張子でファイルを判別します。証明書を `.crt`, 秘密鍵を `.key` として格納してください。
-  - 両方が揃っていない場合、そのドメインの証明書は読み込まれません。
-- `ssl` ディレクトリに証明書がない場合は HTTPS のリスナーは起動しません。
+- Supports multiple domains.
+- The certificate file must be a chained certificate combining intermediate certificates.
+- Files are determined by extension.
+    Save the certificate file with extension `.crt` and the private key file with extension` .key`.
+  - The certificate for that domain will not be read if it dose not have both.
+- The HTTPS listener will not start if there is no `ssl` directory or certificate file.
 
-#### Specified listen port
+#### Specify listen port
 
-HTTPS のポートは `HTTPS_PORT` で指定してください。指定しなかった場合は 443 ポートが利用されますが、Linux (ry
+The listen port can be specified by the environment variable `HTTPS_PORT`.
+If not specified, it will listen on port `443`.
+
+> Note that on Linux, only the root user can use port 443.
 
 ```sh
 PORT=8080 HTTPS_PORT=8443 ./maint-server
@@ -67,7 +74,7 @@ PORT=8080 HTTPS_PORT=8443 ./maint-server
 
 ### Specify Retry-After
 
-`RETRY_AFTER` 環境変数に `yyyy-MM-dd hh:mm:ss+0000` 形式で日時を指定することで、レスポンスに `Retry-After` ヘッダを含めることができます。
+You can include a `Retry-After` header in your response by specifying the date and time in the `RETRY_AFTER` environment variable in the form `yyyy-MM-dd hh:mm:ss+0000`.
 
 ```sh
 RETRY_AFTER="2019-06-20 23:59:59+0900" ./maint-server
@@ -75,12 +82,12 @@ RETRY_AFTER="2019-06-20 23:59:59+0900" ./maint-server
 
 ## Use systemd service unit
 
-`examples` ディレクトリにある以下のファイルを編集してサーバー上にデプロイしてください。
+Edit the following files in the `examples` directory and deploy them on the server.
 
 - [/etc/sysconfig/sorry](examples/systemd/etc/sysconfig/sorry)
 - [/usr/lib/systemd/system/sorry.service](examples/systemd/usr/lib/systemd/system/sorry.service)
 
-デプロイ後、以下のコマンドでサービスを起動してください。
+After deployment, start the service with the following command.
 
 ```sh
 sudo systemctl daemon-reload
@@ -90,12 +97,12 @@ sudo systemctl start sorry
 
 ## Use Upstart init config
 
-`examples` ディレクトリにある以下のファイルを編集してサーバー上にデプロイしてください。
+Edit the following files in the `examples` directory and deploy them on the server.
 
 - [/etc/sysconfig/sorry](examples/upstart/etc/sysconfig/sorry)
 - [/etc/init/sorry.conf](examples/upstart/etc/init/sorry.conf)
 
-デプロイ後、以下のコマンドでサービスを起動してください。
+After deployment, start the service with the following command.
 
 ```sh
 sudo initctl reload-configuration
